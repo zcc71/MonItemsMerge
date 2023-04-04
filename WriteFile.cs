@@ -16,7 +16,7 @@ namespace MonItemsMerge
         public string ext { get; set; }
         public bool xdChecked { get; set; }
         public bool geeChecked { get; set; }
-
+        public bool SjChecked { get; set; }
         public WriteFile(string sourcePath, string targetPath, string ext)
         {
             this.sourcePath = sourcePath;
@@ -89,10 +89,11 @@ namespace MonItemsMerge
         }
 
         //从数据生成爆率文件
-        internal void Push(Dictionary<string, List<FilePackage>> paks, bool showInfo, bool xdChecked, bool geeChecked, Action<int> action)
+        internal void Push(Dictionary<string, List<FilePackage>> paks, bool showInfo, bool xdChecked, bool geeChecked,bool sjChecked, Action<int> action)
         {
             this.xdChecked = xdChecked;
             this.geeChecked = geeChecked;
+            this.SjChecked = sjChecked;
 
             var que = new Queue<KeyValuePair<string, List<FilePackage>>>(paks);
             ThreadPool.SetMinThreads(1, 1);
@@ -183,13 +184,13 @@ namespace MonItemsMerge
                 rate = 1;
 
             //心动引擎
-            if (xdChecked)
+            if (xdChecked || SjChecked)
             {
                 var ItemInfo = ParseItemDroupName(detail.name);
                 sb.AppendLine($"{(level <= 1 ? "" : " ")}1/{rate} {ItemInfo.Key} {ItemInfo.Value}");
             }
             //GEE引擎
-            else if (geeChecked)
+            else if (geeChecked )
             {
                 sb.AppendLine($"{(level <= 1 ? "" : " ")}1/{rate} {detail.name}");
             }
@@ -261,6 +262,30 @@ namespace MonItemsMerge
                 if (detail.random != 0)
                 {
                     sb.AppendLine(")");
+                }
+            }
+            //水晶引擎
+            else if (SjChecked)
+            {
+                if (detail.random == 1) //随机爆1件
+                {
+                    sb.AppendLine($"1/{rate} GROUP*"); 
+                }
+                else if (detail.random == 2)//全爆
+                {
+                    sb.AppendLine($"1/{rate} GROUP");
+                }
+                if (detail.random != 0)
+                {
+                    sb.AppendLine("{");
+                }
+                foreach (var item in detail.detail)
+                {
+                    WriteItem(sb, item, 2, pak, detail.random != 0);
+                }
+                if (detail.random != 0)
+                {
+                    sb.AppendLine("}");
                 }
             }
         }

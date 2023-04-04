@@ -399,7 +399,7 @@ namespace MonItemsMerge
                 {
                     try
                     {
-                        write.Push(paks, checkBox1.Checked, XDRadioButton.Checked, GeeRadioButton.Checked, (i) => this.Invoke(act, i));
+                        write.Push(paks, checkBox1.Checked, XDRadioButton.Checked, GeeRadioButton.Checked,SJradioButton.Checked ,(i) => this.Invoke(act, i));
                     }
                     catch (Exception ex)
                     {

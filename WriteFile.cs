@@ -271,7 +271,7 @@ namespace MonItemsMerge
                 {
                     sb.AppendLine($"1/{rate} GROUP*"); 
                 }
-                else if (detail.random == 2)//全爆
+                else if (detail.random > 1)//全爆
                 {
                     sb.AppendLine($"1/{rate} GROUP");
                 }

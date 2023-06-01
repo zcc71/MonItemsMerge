@@ -21,6 +21,11 @@ namespace MonItemsMerge
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            if (!XDRadioButton.Checked && !GeeRadioButton.Checked && !SJradioButton.Checked)
+            {
+                MessageBox.Show("3种转换格式请选择1个");
+                return;
+            }
             try
             {
                 Config config = new Config(System.AppDomain.CurrentDomain.BaseDirectory);
@@ -156,7 +161,7 @@ namespace MonItemsMerge
                 PackageItem lastmonpacke = null;
                 PackageRandomItem lastitempacke = null;
                 PackageItem lastmonitemPack = null;
-
+                string 路径 = "";
                 foreach (var item in packageDt)
                 {
                     //爆率包解析
@@ -388,6 +393,8 @@ namespace MonItemsMerge
                 progressBar1.Maximum = monitemPack.Count();
                 var paks = AdaptPackage(monpacke, itempacke, monitemPack, act2);
 
+              
+
                 //开始写爆率文件
                 Action<int> act = (i) =>
                 {
@@ -395,7 +402,8 @@ namespace MonItemsMerge
                     this.Text = "导出数量 " + i.ToString();
                 };
                 progressBar1.Maximum = paks.Count();
-                if (paks != null && paks.Any())
+
+                if (paks != null && paks.Any() && !checkBox2.Checked)
                 {
                     try
                     {
@@ -499,7 +507,10 @@ namespace MonItemsMerge
             Dictionary<string, PackageItem> monitemsPak,        //爆率包
             Action<int> act)
         {
+            //实例化写入文件类
+            var write = new WriteFile(this.txt_Target.Text);
             Dictionary<string, List<FilePackage>> response = new Dictionary<string, List<FilePackage>>();
+            Dictionary<string, List<FilePackage>> 临时response = new Dictionary<string, List<FilePackage>>();
             //解析怪物包/物品包
             AdaptPak(monsterPak);
             AdaptPak(stdItemsPak);
@@ -593,10 +604,22 @@ namespace MonItemsMerge
                         {
                             response.Add(g.Key, g.ToList());
                         }
+                        if (临时response.ContainsKey(g.Key))
+                        {
+                            临时response[g.Key].AddRange(g);
+                        }
+                        else
+                        {
+                            临时response.Add(g.Key, g.ToList());
+                        }
                     }
                 }
-
-
+                //----每个怪物包单独保存
+                if (checkBox2.Checked)
+                {
+                    write.PushAsync(临时response, checkBox1.Checked, XDRadioButton.Checked, GeeRadioButton.Checked, SJradioButton.Checked, (i) => this.Invoke(act, i), monsterPak.ContainsKey(item.Key) ? monsterPak[item.Key].name : "");
+                    临时response.Clear();
+                }
                 act(page++);
             }
 

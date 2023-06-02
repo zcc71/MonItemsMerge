@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Yun.Common;
 using static MonItemsMerge.ImportMonItems;
 
@@ -16,7 +17,7 @@ namespace MonItemsMerge
         public string ext { get; set; }
         public bool xdChecked { get; set; }
         public bool geeChecked { get; set; }
-
+        public bool SjChecked { get; set; }
         public WriteFile(string sourcePath, string targetPath, string ext)
         {
             this.sourcePath = sourcePath;
@@ -89,10 +90,11 @@ namespace MonItemsMerge
         }
 
         //从数据生成爆率文件
-        internal void Push(Dictionary<string, List<FilePackage>> paks, bool showInfo, bool xdChecked, bool geeChecked, Action<int> action)
+        internal void Push(Dictionary<string, List<FilePackage>> paks, bool showInfo, bool xdChecked, bool geeChecked,bool sjChecked, Action<int> action)
         {
             this.xdChecked = xdChecked;
             this.geeChecked = geeChecked;
+            this.SjChecked = sjChecked;
 
             var que = new Queue<KeyValuePair<string, List<FilePackage>>>(paks);
             ThreadPool.SetMinThreads(1, 1);
@@ -115,11 +117,11 @@ namespace MonItemsMerge
                     {
                         if (!string.IsNullOrEmpty(targetPath))
                         {
-                            if (!Directory.Exists(targetPath))
+                            if (!Directory.Exists(targetPath ))
                             {
                                 Directory.CreateDirectory(targetPath);
                             }
-                            using (var s = new StreamWriter(Path.Combine(this.targetPath, mon.Key + ".txt"), false, Encoding.UTF8))
+                            using (var s = new StreamWriter(Path.Combine(this.targetPath , mon.Key + ".txt"), false, Encoding.UTF8))
                             {
                                 s.Write(sb);
                             }
@@ -128,6 +130,42 @@ namespace MonItemsMerge
                     action(index);
                 };
                 ThreadPool.UnsafeQueueUserWorkItem(act, null);
+            };
+        }
+
+        internal async Task PushAsync(Dictionary<string, List<FilePackage>> paks, bool showInfo, bool xdChecked, bool geeChecked, bool sjChecked, Action<int> action, string 路径)
+        {
+            this.xdChecked = xdChecked; this.geeChecked = geeChecked; this.SjChecked = sjChecked;
+
+            var que = new Queue<KeyValuePair<string, List<FilePackage>>>(paks);
+
+            for (int index = 0; index < paks.Count(); index++)
+            {
+                var sb = new StringBuilder();
+                //取出单个怪掉落信息
+                var mon = que.Dequeue();
+                //解析掉落字符串
+                foreach (var item in mon.Value)
+                {
+                    PushMonItemPak(sb, item, showInfo);
+                }
+                //将字符串写入文件 mon.Value[0].OutPutDesc ;-->root:1 ;-->monpak:怪物包-1级 rate:1;-->monpak:稻草人 rate:1
+                if (sb.Length > 0)
+                {
+                    var filePath = $"{this.targetPath}/{路径}/";
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        if (!Directory.Exists(filePath))
+                        {
+                            Directory.CreateDirectory(filePath);
+                        }
+                        using (var s = new StreamWriter(Path.Combine(filePath, mon.Key + ".txt"), false, Encoding.UTF8))
+                        {
+                            await s.WriteAsync(sb.ToString());
+                        }
+                    }
+                }
+                action(index);
             };
         }
 
@@ -183,13 +221,13 @@ namespace MonItemsMerge
                 rate = 1;
 
             //心动引擎
-            if (xdChecked)
+            if (xdChecked || SjChecked)
             {
                 var ItemInfo = ParseItemDroupName(detail.name);
                 sb.AppendLine($"{(level <= 1 ? "" : " ")}1/{rate} {ItemInfo.Key} {ItemInfo.Value}");
             }
             //GEE引擎
-            else if (geeChecked)
+            else if (geeChecked )
             {
                 sb.AppendLine($"{(level <= 1 ? "" : " ")}1/{rate} {detail.name}");
             }
@@ -261,6 +299,30 @@ namespace MonItemsMerge
                 if (detail.random != 0)
                 {
                     sb.AppendLine(")");
+                }
+            }
+            //水晶引擎
+            else if (SjChecked)
+            {
+                if (detail.random == 1) //随机爆1件
+                {
+                    sb.AppendLine($"1/{rate} GROUP*"); 
+                }
+                else if (detail.random > 1)//全爆
+                {
+                    sb.AppendLine($"1/{rate} GROUP");
+                }
+                if (detail.random != 0)
+                {
+                    sb.AppendLine("{");
+                }
+                foreach (var item in detail.detail)
+                {
+                    WriteItem(sb, item, 2, pak, detail.random != 0);
+                }
+                if (detail.random != 0)
+                {
+                    sb.AppendLine("}");
                 }
             }
         }

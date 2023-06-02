@@ -39,6 +39,8 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.XDRadioButton = new System.Windows.Forms.RadioButton();
             this.GeeRadioButton = new System.Windows.Forms.RadioButton();
+            this.SJradioButton = new System.Windows.Forms.RadioButton();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label2
@@ -125,30 +127,54 @@
             // XDRadioButton
             // 
             this.XDRadioButton.AutoSize = true;
-            this.XDRadioButton.Checked = true;
-            this.XDRadioButton.Location = new System.Drawing.Point(209, 140);
+            this.XDRadioButton.Location = new System.Drawing.Point(203, 140);
             this.XDRadioButton.Name = "XDRadioButton";
             this.XDRadioButton.Size = new System.Drawing.Size(47, 16);
             this.XDRadioButton.TabIndex = 18;
-            this.XDRadioButton.TabStop = true;
             this.XDRadioButton.Text = "XDM2";
             this.XDRadioButton.UseVisualStyleBackColor = true;
             // 
             // GeeRadioButton
             // 
             this.GeeRadioButton.AutoSize = true;
-            this.GeeRadioButton.Location = new System.Drawing.Point(288, 140);
+            this.GeeRadioButton.Location = new System.Drawing.Point(273, 140);
             this.GeeRadioButton.Name = "GeeRadioButton";
             this.GeeRadioButton.Size = new System.Drawing.Size(65, 16);
             this.GeeRadioButton.TabIndex = 19;
             this.GeeRadioButton.Text = "GEE ASK";
             this.GeeRadioButton.UseVisualStyleBackColor = true;
             // 
+            // SJradioButton
+            // 
+            this.SJradioButton.AutoSize = true;
+            this.SJradioButton.Checked = true;
+            this.SJradioButton.Location = new System.Drawing.Point(361, 140);
+            this.SJradioButton.Name = "SJradioButton";
+            this.SJradioButton.Size = new System.Drawing.Size(47, 16);
+            this.SJradioButton.TabIndex = 20;
+            this.SJradioButton.TabStop = true;
+            this.SJradioButton.Text = "水晶";
+            this.SJradioButton.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Checked = true;
+            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox2.Location = new System.Drawing.Point(100, 140);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(96, 16);
+            this.checkBox2.TabIndex = 21;
+            this.checkBox2.Text = "按怪物包分类";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
             // ImportMonItems
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(561, 162);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.SJradioButton);
             this.Controls.Add(this.GeeRadioButton);
             this.Controls.Add(this.XDRadioButton);
             this.Controls.Add(this.checkBox1);
@@ -183,5 +209,7 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.RadioButton XDRadioButton;
         private System.Windows.Forms.RadioButton GeeRadioButton;
+        private System.Windows.Forms.RadioButton SJradioButton;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }

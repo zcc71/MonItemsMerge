@@ -580,6 +580,9 @@
     <loc>https://docs.angularjs.org/api/ng/function/angular.reloadWithDebugInfo</loc>
   </url>
   <url>
+    <loc>https://docs.angularjs.org/api/ng/function/angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement</loc>
+  </url>
+  <url>
     <loc>https://docs.angularjs.org/api/ng/object/angular.version</loc>
   </url>
   <url>
